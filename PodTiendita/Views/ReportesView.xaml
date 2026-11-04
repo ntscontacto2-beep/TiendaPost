@@ -1,0 +1,221 @@
+<UserControl
+    x:Class="PodTiendita.Views.ReportesView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:ctl="clr-namespace:PodTiendita.Controls">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="30,22,30,30">
+
+            <!-- Título + descarga -->
+            <Grid>
+                <StackPanel>
+                    <TextBlock Text="Reportes" FontSize="24" FontWeight="SemiBold" Foreground="{StaticResource PosDark}"/>
+                    <TextBlock Text="Analiza lo que has vendido en tu tienda" FontSize="12"
+                               Foreground="{StaticResource PosMuted}" Margin="0,2,0,0"/>
+                </StackPanel>
+                <Button Style="{StaticResource OutlineAccentButton}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Command="{Binding DescargarPdfCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <ui:SymbolIcon Symbol="ArrowDownload24" FontSize="16" Margin="0,0,8,0"/>
+                        <TextBlock Text="Descargar reporte PDF" FontSize="12" FontWeight="Medium"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- Periodo -->
+            <Grid Margin="0,20,0,16">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <RadioButton Content="Semana" GroupName="tipo" IsChecked="True" Style="{StaticResource PillButton}"
+                                 Command="{Binding SeleccionarTipoCommand}" CommandParameter="Semana"/>
+                    <RadioButton Content="Mes" GroupName="tipo" Style="{StaticResource PillButton}"
+                                 Command="{Binding SeleccionarTipoCommand}" CommandParameter="Mes"/>
+                    <RadioButton Content="Trimestre" GroupName="tipo" Style="{StaticResource PillButton}"
+                                 Command="{Binding SeleccionarTipoCommand}" CommandParameter="Trimestre"/>
+                </StackPanel>
+
+                <Border Style="{StaticResource Card}" HorizontalAlignment="Right" Padding="4">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource GhostButton}" Padding="8" ToolTip="Periodo anterior"
+                                Command="{Binding AnteriorCommand}">
+                            <ui:SymbolIcon Symbol="ChevronLeft24" FontSize="16"/>
+                        </Button>
+                        <TextBlock Text="{Binding Etiqueta}" FontSize="12" FontWeight="Medium" MinWidth="220"
+                                   TextAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource PosDark}"/>
+                        <Button Style="{StaticResource GhostButton}" Padding="8" ToolTip="Periodo siguiente"
+                                Command="{Binding SiguienteCommand}">
+                            <ui:SymbolIcon Symbol="ChevronRight24" FontSize="16"/>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Indicadores -->
+            <ItemsControl ItemsSource="{Binding Indicadores}" Margin="0,0,-12,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="4"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Card}" Padding="20,16" Margin="0,0,12,0">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Titulo}" Style="{StaticResource HeaderCell}"/>
+                                <TextBlock Text="{Binding Valor}" FontSize="24" FontWeight="SemiBold"
+                                           Foreground="{StaticResource PosDark}" Margin="0,6,0,4"/>
+                                <TextBlock Text="{Binding Nota}" FontSize="10" TextWrapping="Wrap">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{StaticResource PosMuted}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Tono}" Value="1">
+                                                    <Setter Property="Foreground" Value="{StaticResource PosOk}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Tono}" Value="2">
+                                                    <Setter Property="Foreground" Value="{StaticResource PosDanger}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Ventas por día/semana + métodos de pago -->
+            <Grid Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource Card}" Padding="24">
+                    <StackPanel>
+                        <TextBlock Text="{Binding TituloBarras}" FontSize="15" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PosDark}" Margin="0,0,0,12"/>
+                        <ctl:BarChart Barras="{Binding Barras}" Height="270"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource Card}" Padding="24">
+                    <StackPanel>
+                        <TextBlock Text="Métodos de pago" FontSize="15" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PosDark}" Margin="0,0,0,12"/>
+
+                        <TextBlock Text="Sin ventas en este periodo." FontSize="12" Foreground="{StaticResource PosMuted}"
+                                   Margin="0,40" HorizontalAlignment="Center"
+                                   Visibility="{Binding SinVentas, Converter={StaticResource BoolVis}}"/>
+
+                        <StackPanel Visibility="{Binding HayVentas, Converter={StaticResource BoolVis}}">
+                            <ctl:PieChart Width="170" Height="170" Rebanadas="{Binding Metodos}"
+                                          TextoCentral="{Binding TotalCentral}" SubtextoCentral="vendido"/>
+                            <ItemsControl ItemsSource="{Binding Metodos}" Margin="0,18,0,0">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,5">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Width="12" Height="12" Background="{Binding ColorHex}"
+                                                    VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Etiqueta}" Style="{StaticResource Cell}"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Porcentaje, StringFormat={}{0:0.#}%}"
+                                                       Style="{StaticResource Cell}" FontWeight="SemiBold"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Productos más vendidos + categorías -->
+            <Grid Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource Card}" Padding="24,20">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,8">
+                            <TextBlock Text="Productos más vendidos" FontSize="15" FontWeight="SemiBold"
+                                       Foreground="{StaticResource PosDark}"/>
+                            <TextBlock Text="Por monto vendido" Style="{StaticResource HeaderCell}"
+                                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        </Grid>
+
+                        <TextBlock Text="Sin ventas en este periodo." FontSize="12" Foreground="{StaticResource PosMuted}"
+                                   Margin="0,24" HorizontalAlignment="Center"
+                                   Visibility="{Binding SinVentas, Converter={StaticResource BoolVis}}"/>
+
+                        <ItemsControl ItemsSource="{Binding TopProductos}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource PosBorder}" BorderThickness="0,1,0,0" Padding="0,10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Width="40" Height="40" Background="{StaticResource PosAccentSoft}"
+                                                    Padding="4" Margin="0,0,12,0">
+                                                <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ImagenProducto}"/>
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Nombre}" Style="{StaticResource Cell}" FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{Binding Unidades, StringFormat={}{0} unidades}" FontSize="10"
+                                                           Foreground="{StaticResource PosMuted}"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="2" Text="{Binding Monto, StringFormat={}{0:C2}}"
+                                                       Style="{StaticResource Cell}" FontWeight="SemiBold"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource Card}" Padding="24" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Text="Ventas por categoría" FontSize="15" FontWeight="SemiBold"
+                                   Foreground="{StaticResource PosDark}" Margin="0,0,0,14"/>
+                        <TextBlock Text="Sin ventas en este periodo." FontSize="12" Foreground="{StaticResource PosMuted}"
+                                   Margin="0,12" HorizontalAlignment="Center"
+                                   Visibility="{Binding SinVentas, Converter={StaticResource BoolVis}}"/>
+                        <ItemsControl ItemsSource="{Binding Categorias}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,0,0,16">
+                                        <Grid>
+                                            <TextBlock Text="{Binding Categoria}" Style="{StaticResource Cell}"/>
+                                            <TextBlock Text="{Binding Porcentaje, StringFormat={}{0:0.#}%}" Style="{StaticResource Cell}"
+                                                       FontWeight="SemiBold" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                        <ProgressBar Value="{Binding Porcentaje, Mode=OneWay}" Maximum="100" Height="6" Margin="0,6,0,4"
+                                                     Foreground="{StaticResource PosAccent}" Background="{StaticResource PosBorder}"
+                                                     BorderThickness="0"/>
+                                        <TextBlock Text="{Binding Monto, StringFormat={}{0:C2}}" FontSize="10"
+                                                   Foreground="{StaticResource PosMuted}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
