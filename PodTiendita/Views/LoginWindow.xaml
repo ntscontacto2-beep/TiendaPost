@@ -1,0 +1,83 @@
+﻿<ui:FluentWindow
+    x:Class="PodTiendita.Views.LoginWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    mc:Ignorable="d"
+    Title="Iniciar sesión" Height="600" Width="960"
+    WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+    ExtendsContentIntoTitleBar="True"
+    WindowBackdropType="None"
+    Background="White">
+
+    <Grid>
+        <ui:TitleBar Title="" ShowMaximize="False" VerticalAlignment="Top" Panel.ZIndex="10"/>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Panel izquierdo -->
+            <Border Grid.Column="0" Background="{StaticResource PosDark}">
+                <Grid>
+                    <ui:SymbolIcon Symbol="BuildingShop24" FontSize="38" Foreground="White"
+                                   HorizontalAlignment="Left" VerticalAlignment="Top"
+                                   Margin="40,56,0,0"/>
+
+                    <StackPanel VerticalAlignment="Bottom" Margin="40,0,40,48">
+                        <Border Width="40" Height="3" Background="{StaticResource PosAccent}" HorizontalAlignment="Left"
+                                Margin="0,0,0,18"/>
+                        <TextBlock Text="Controla tus ventas y tu inventario desde un solo lugar"
+                                   Foreground="White" FontSize="24" FontWeight="SemiBold"
+                                   TextWrapping="Wrap"/>
+                        <TextBlock Text="PodTiendita · Punto de venta" Foreground="#9CA3AF" FontSize="12"
+                                   Margin="0,12,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Formulario -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center"
+                        HorizontalAlignment="Center" Width="300">
+
+                <TextBlock Text="Iniciar sesión" FontSize="28" FontWeight="SemiBold"
+                           Foreground="{StaticResource PosDark}"/>
+                <TextBlock Text="Accede a PodTiendita para administrar tus ventas y tu inventario."
+                           FontSize="12" Foreground="{StaticResource PosMuted}" TextWrapping="Wrap"
+                           Margin="0,8,0,28"/>
+
+                <TextBlock Text="Usuario" FontWeight="SemiBold" Foreground="{StaticResource PosDark}"
+                           Margin="0,0,0,6"/>
+                <ui:TextBox x:Name="txtUsuario"
+                            PlaceholderText="Nombre de usuario"
+                            Margin="0,0,0,18"/>
+
+                <TextBlock Text="Contraseña" FontWeight="SemiBold" Foreground="{StaticResource PosDark}"
+                           Margin="0,0,0,6"/>
+                <ui:PasswordBox x:Name="txtPassword"
+                                PlaceholderText="••••••••••"
+                                RevealButtonEnabled="True"
+                                KeyDown="TxtPassword_KeyDown"/>
+
+                <TextBlock x:Name="lblError"
+                           Foreground="{StaticResource PosDanger}"
+                           Visibility="Collapsed"
+                           TextWrapping="Wrap"
+                           Margin="0,10,0,0"/>
+
+                <ui:Button Content="Ingresar"
+                           Appearance="Primary"
+                           Background="{StaticResource PosAccent}"
+                           Foreground="White"
+                           HorizontalAlignment="Stretch"
+                           Height="42"
+                           Margin="0,24,0,0"
+                           Click="BtnIngresar_Click"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</ui:FluentWindow>

@@ -1,0 +1,55 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+                    xmlns:conv="clr-namespace:PodTiendita.Converters">
+
+    <BooleanToVisibilityConverter x:Key="BoolVis"/>
+    <conv:RutaImagenConverter x:Key="RutaImagen"/>
+
+    <!-- Etiqueta de disponibilidad: verde / naranja (stock bajo) / rojo (agotado) -->
+    <Style x:Key="StockBadge" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Text" Value="{Binding Stock, StringFormat={}{0} disp.}"/>
+        <Setter Property="Foreground" Value="{StaticResource PosOk}"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding StockBajo}" Value="True">
+                <Setter Property="Foreground" Value="{StaticResource PosWarn}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding SinStock}" Value="True">
+                <Setter Property="Text" Value="Agotado"/>
+                <Setter Property="Foreground" Value="{StaticResource PosDanger}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Tarjeta blanca con borde suave -->
+    <Style x:Key="Card" TargetType="Border">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="BorderBrush" Value="{StaticResource PosBorder}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+
+    <!-- Encabezado y celda de tabla -->
+    <Style x:Key="HeaderCell" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="10"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Foreground" Value="{StaticResource PosMuted}"/>
+    </Style>
+
+    <Style x:Key="Cell" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="{StaticResource PosDark}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <!-- Imagen del producto con ícono de respaldo cuando aún no tiene foto -->
+    <DataTemplate x:Key="ImagenProducto">
+        <Grid>
+            <ui:SymbolIcon Symbol="Box24" FontSize="30" Foreground="#9AA8B8"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Image Source="{Binding ImagenRuta, Converter={StaticResource RutaImagen}}" Stretch="Uniform"/>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>

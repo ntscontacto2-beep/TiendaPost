@@ -1,0 +1,230 @@
+<UserControl
+    x:Class="PodTiendita.Views.VentasView"
+    x:Name="vista"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="370"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ============ Catálogo ============ -->
+        <Grid Grid.Column="0" Margin="30,22,30,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="Nueva venta" FontSize="24" FontWeight="SemiBold" Foreground="{StaticResource PosDark}"/>
+                <TextBlock Text="Agrega productos al carrito para comenzar" FontSize="12"
+                           Foreground="{StaticResource PosMuted}" Margin="0,2,0,16"/>
+            </StackPanel>
+
+            <!-- Búsqueda -->
+            <Border Grid.Row="1" Background="White" CornerRadius="0" Height="44"
+                    BorderBrush="{StaticResource PosBorder}" BorderThickness="1">
+                <Grid>
+                    <ui:SymbolIcon Symbol="Search24" FontSize="18" Foreground="{StaticResource PosMuted}"
+                                   HorizontalAlignment="Left" Margin="16,0,0,0"/>
+                    <TextBox x:Name="txtBuscar" Background="Transparent" BorderThickness="0"
+                             VerticalContentAlignment="Center" Margin="44,0,16,0" FontSize="13"
+                             Text="{Binding Busqueda, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="Buscar por nombre..." IsHitTestVisible="False"
+                               Foreground="{StaticResource PosMuted}" FontSize="13"
+                               VerticalAlignment="Center" Margin="48,0,0,0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=txtBuscar}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
+            </Border>
+
+            <!-- Categorías -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,16,0,16">
+                <RadioButton Content="Todos" GroupName="categorias" IsChecked="True"
+                             Style="{StaticResource PillButton}"
+                             Command="{Binding SeleccionarCategoriaCommand}" CommandParameter="Todos"/>
+                <RadioButton Content="Abarrotes" GroupName="categorias"
+                             Style="{StaticResource PillButton}"
+                             Command="{Binding SeleccionarCategoriaCommand}" CommandParameter="Abarrotes"/>
+                <RadioButton Content="Licores" GroupName="categorias"
+                             Style="{StaticResource PillButton}"
+                             Command="{Binding SeleccionarCategoriaCommand}" CommandParameter="Licores"/>
+            </StackPanel>
+
+            <!-- Productos -->
+            <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding ProductosVisibles}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource ProductCard}" Width="200" Margin="0,0,16,16"
+                                    Command="{Binding DataContext.AgregarCommand, ElementName=vista}"
+                                    CommandParameter="{Binding}">
+                                <StackPanel>
+                                    <Border Height="110" Background="{StaticResource PosAccentSoft}" Padding="12">
+                                        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource ImagenProducto}"/>
+                                    </Border>
+                                    <StackPanel Margin="14,10,14,14">
+                                        <TextBlock Text="{Binding Categoria}" FontSize="10"
+                                                   Foreground="{StaticResource PosMuted}"/>
+                                        <TextBlock Text="{Binding Nombre}" FontSize="13" FontWeight="Medium"
+                                                   Foreground="{StaticResource PosDark}" TextTrimming="CharacterEllipsis"
+                                                   Margin="0,2,0,10"/>
+                                        <Grid>
+                                            <TextBlock Text="{Binding Precio, StringFormat={}{0:C2}}" FontSize="14"
+                                                       FontWeight="SemiBold" Foreground="{StaticResource PosAccent}"/>
+                                            <TextBlock Style="{StaticResource StockBadge}" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ============ Venta actual ============ -->
+        <Border Grid.Column="1" Background="White" CornerRadius="0"
+                BorderBrush="{StaticResource PosBorder}" BorderThickness="1,0,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Encabezado -->
+                <StackPanel Grid.Row="0" Margin="24,24,24,12">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Venta actual" FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource PosDark}"/>
+                        <TextBlock Text="{Binding Articulos, StringFormat={}{0} productos}" FontSize="11"
+                                   Foreground="{StaticResource PosMuted}" VerticalAlignment="Bottom" Margin="10,0,0,2"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,14,0,0">
+                        <RadioButton Content="Efectivo" Style="{StaticResource PillDark}"
+                                     GroupName="pago" IsChecked="{Binding PagoEnEfectivo, Mode=TwoWay}"/>
+                        <RadioButton Content="Tarjeta" Style="{StaticResource PillDark}" GroupName="pago"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Líneas -->
+                <Grid Grid.Row="1" Margin="24,0">
+                    <TextBlock Text="Agrega productos para iniciar la venta" TextWrapping="Wrap" TextAlignment="Center"
+                               Foreground="{StaticResource PosMuted}" FontSize="12"
+                               VerticalAlignment="Center" HorizontalAlignment="Center"
+                               Visibility="{Binding CarritoVacio, Converter={StaticResource BoolVis}}"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Carrito}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="0,12" BorderBrush="{StaticResource PosBorder}" BorderThickness="0,0,0,1">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Border Width="56" Height="56" CornerRadius="0" Padding="6"
+                                                    Background="{StaticResource PosAccentSoft}" VerticalAlignment="Top">
+                                                <ContentControl Content="{Binding Producto}"
+                                                                ContentTemplate="{StaticResource ImagenProducto}"/>
+                                            </Border>
+
+                                            <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                                <Grid>
+                                                    <TextBlock Text="{Binding Producto.Nombre}" FontSize="13" FontWeight="Medium"
+                                                               Foreground="{StaticResource PosDark}" TextTrimming="CharacterEllipsis"
+                                                               Margin="0,0,28,0"/>
+                                                    <Button Style="{StaticResource GhostButton}" HorizontalAlignment="Right"
+                                                            VerticalAlignment="Top" Padding="4" ToolTip="Quitar"
+                                                            Command="{Binding DataContext.QuitarCommand, ElementName=vista}"
+                                                            CommandParameter="{Binding}">
+                                                        <ui:SymbolIcon Symbol="Delete24" FontSize="16"/>
+                                                    </Button>
+                                                </Grid>
+                                                <TextBlock Text="{Binding Producto.Precio, StringFormat={}{0:C2} c/u}" FontSize="11"
+                                                           Foreground="{StaticResource PosMuted}" Margin="0,2,0,8"/>
+                                                <Grid>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Button Content="−" Style="{StaticResource RoundStepper}"
+                                                                Command="{Binding DataContext.MenosCommand, ElementName=vista}"
+                                                                CommandParameter="{Binding}"/>
+                                                        <TextBlock Text="{Binding Cantidad}" Width="30" TextAlignment="Center"
+                                                                   VerticalAlignment="Center" FontSize="13"
+                                                                   Foreground="{StaticResource PosDark}"/>
+                                                        <Button Content="+" Style="{StaticResource RoundStepper}"
+                                                                Command="{Binding DataContext.MasCommand, ElementName=vista}"
+                                                                CommandParameter="{Binding}"/>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding Subtotal, StringFormat={}{0:C2}}" FontSize="13"
+                                                               FontWeight="SemiBold" Foreground="{StaticResource PosDark}"
+                                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+
+                <!-- Totales -->
+                <StackPanel Grid.Row="2" Margin="24,12,24,24">
+                    <!-- El descuento solo lo maneja el administrador -->
+                    <Grid Margin="0,0,0,12" Visibility="{Binding EsAdministrador, Converter={StaticResource BoolVis}}">
+                        <TextBlock Text="Descuento" FontSize="12" Foreground="{StaticResource PosDark}" VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBox Width="56" TextAlignment="Right" FontSize="12"
+                                     Text="{Binding DescuentoPorcentaje, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Text="%" FontSize="12" Foreground="{StaticResource PosMuted}"
+                                       VerticalAlignment="Center" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,4">
+                        <TextBlock Text="Subtotal" FontSize="12" Foreground="{StaticResource PosMuted}"/>
+                        <TextBlock Text="{Binding Subtotal, StringFormat={}{0:C2}}" FontSize="12"
+                                   HorizontalAlignment="Right" Foreground="{StaticResource PosDark}"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,8" Visibility="{Binding EsAdministrador, Converter={StaticResource BoolVis}}">
+                        <TextBlock Text="Descuento" FontSize="12" Foreground="{StaticResource PosMuted}"/>
+                        <TextBlock Text="{Binding MontoDescuento, StringFormat=- {0:C2}}" FontSize="12"
+                                   HorizontalAlignment="Right" Foreground="{StaticResource PosDark}"/>
+                    </Grid>
+                    <Border Height="1" Background="{StaticResource PosBorder}" Margin="0,4,0,12"/>
+                    <Grid Margin="0,0,0,16">
+                        <TextBlock Text="Total" FontSize="15" FontWeight="Medium" Foreground="{StaticResource PosDark}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding Total, StringFormat={}{0:C2} MXN}" FontSize="24" FontWeight="SemiBold"
+                                   HorizontalAlignment="Right" Foreground="{StaticResource PosDark}"/>
+                    </Grid>
+                    <Button Content="{Binding Total}" ContentStringFormat="Cobrar   {0:C2} MXN"
+                            Style="{StaticResource AccentButton}" Command="{Binding CobrarCommand}"/>
+                    <Button Content="Cancelar venta" Style="{StaticResource GhostButton}" FontSize="12"
+                            Foreground="{StaticResource PosMuted}" HorizontalAlignment="Center"
+                            Margin="0,10,0,0" Padding="8,4" Command="{Binding CancelarCommand}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
